@@ -51,6 +51,7 @@ pip install -r requirements.txt
 
 ## Project Structure
 
+```
 PyGameEngine/
 ├── game_engine/                # Core game engine package
 │   ├── __pycache__/            # Python bytecode cache
@@ -83,6 +84,7 @@ PyGameEngine/
 ├── requirements.txt            # Python dependencies
 ├── LICENSE                     # MIT License
 └── .gitattributes
+```
 
 ---
 
