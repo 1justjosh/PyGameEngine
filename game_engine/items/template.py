@@ -63,7 +63,7 @@ class Temp:
                     surface.fill((255, 255, 255))
                     fixed.update({a: surface})
 
-                result = Physic().collision([self.coords[0], self.coords[1]], self.image, fixed, True)
+                result = Physic().pixel_perfect_collision([self.coords[0], self.coords[1]], self.image, fixed, True)
                 if result:
                     overlap = result.overlap_rect
                     item_x, item_y = result.item_coords
@@ -116,12 +116,12 @@ class Temp:
             #-----------------------------------------------------------------------------------------------------
 
             if self.run:
-                #-Gravity----------------------------------------
+                """#-Gravity----------------------------------------
                 if not self.on_ground:
                     self.velocity_y += self.GRAVITY
                     if self.velocity_y > self.MAX_FALL_SPEED:
                         self.velocity_y = self.MAX_FALL_SPEED
-                #------------------------------------------------
+                #------------------------------------------------"""
 
                 #-User Codes--------------------------------------------------------------------------------------
                 func(tiles)

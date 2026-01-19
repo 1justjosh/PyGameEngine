@@ -232,7 +232,7 @@ Function(s);/
                 clarify = (coords_[0] - light_coord[0], coords_[1] - light_coord[1])
                 clarify_ = (clarify[0] + image_.get_size()[0], clarify[1] + image_.get_size()[1])
 
-                if (clarify_ > (0, 0)).all() and (clarify < size).all():
+                if clarify_[0] > 0 and clarify_[1] > 0 and clarify[0] < size[0] and clarify[1] < size[1]:
                     mask = pygame.mask.from_surface(image_).outline()
 
                     img_size = image_.get_size()
@@ -273,21 +273,23 @@ This class performs calculations based on simple physics laws.
 Basic Usage of the Class:
 -------------------------
 >>> Physic.throwing(...) #You must set the variables.
->>> Physic.collision(...) #You must set the variables.
+>>> Physic.pixel_perfect_collision(...) #You must set the variables.
+>>> Physic.rect_collision(...) #You must set the variables.
 
 The Class Variable;
 -------------------
 >>> physic_var.gen_obj #You can only use if the variable was set.  
 
 Function(s);/
-`collision`
+`pixel_perfect_collision`
+`rect_collision`
 `throwing`
     """
 
     Result = namedtuple("Result", "item_collision_coords item_coords item_index item_size side overlap_rect")
 
     @classmethod
-    def collision(cls, coords: tuple or list, image: pygame.image, collision_items: dict, col_ret_in_list: bool = False, *args, **kwds) -> namedtuple:
+    def pixel_perfect_collision(cls, coords: tuple, image: pygame.image, collision_items: dict, col_ret_in_list: bool = False, *args, **kwds) -> namedtuple:
         """
         It makes collision test between the image and the collision items, you can set return result visa versa. 
 
@@ -303,61 +305,106 @@ Function(s);/
             img_mask = pygame.mask.from_surface(image)
 
         if type(collision_items) != dict:
-            raise TypeError("collision_items parameter type must be a dict, not {}".format(type(collision_items)))
+            raise TypeError(f"collision_items parameter type must be a dict, not {type(collision_items)}")
 
-        if not "basic" in kwds.keys():
-            for item_coords in collision_items.keys():
-                item = collision_items[item_coords]["image"] if "key" in kwds.keys() else collision_items[item_coords]
+        for item_coords in collision_items.keys():
+            item = collision_items[item_coords]["image"] if "key" in kwds.keys() else collision_items[item_coords]
 
-                mask = pygame.mask.from_surface(item.frame_image) if isinstance(item, Animation) else pygame.mask.from_surface(item)
+            mask = pygame.mask.from_surface(item.frame_image) if isinstance(item, Animation) else pygame.mask.from_surface(item)
 
-                if col_ret_in_list:
-                    offset = (int(x_coor - item_coords[0]), int(y_coor - item_coords[1]))
-                    result = mask.overlap(img_mask, offset)
-                else:
-                    offset = (int(item_coords[0] - x_coor), int(item_coords[1] - y_coor))
-                    result = img_mask.overlap(mask, offset)
+            if col_ret_in_list:
+                offset = (int(x_coor - item_coords[0]), int(y_coor - item_coords[1]))
+                result = mask.overlap(img_mask, offset)
+            else:
+                offset = (int(item_coords[0] - x_coor), int(item_coords[1] - y_coor))
+                result = img_mask.overlap(mask, offset)
 
-                if result:
-                    self_rect = pygame.Rect(x_coor, y_coor, image.get_width(), image.get_height())
-                    item_rect = pygame.Rect(item_coords, item.get_size())
+            if result:
+                self_rect = pygame.Rect(x_coor, y_coor, image.get_width(), image.get_height())
+                item_rect = pygame.Rect(item_coords, item.get_size())
 
-                    overlap = self_rect.clip(item_rect)
+                overlap = self_rect.clip(item_rect)
 
-                    side = None
-                    if overlap.width < overlap.height:
-                        if self_rect.centerx < item_rect.centerx:
-                            side = "left"
-                        else:
-                            side = "right"
+                side = None
+                if overlap.width < overlap.height:
+                    if self_rect.centerx < item_rect.centerx:
+                        side = "left"
                     else:
-                        if self_rect.centery < item_rect.centery:
-                            side = "top"
-                        else:
-                            side = "bottom" 
+                        side = "right"
+                else:
+                    if self_rect.centery < item_rect.centery:
+                        side = "top"
+                    else:
+                        side = "bottom" 
 
-                    return cls.Result(
-                        result,
-                        item_coords,
-                        list(collision_items.keys()).index(item_coords),
-                        item.get_size(),
-                        side,
-                        overlap
-                    )
-        else:
-            for item_coords in collision_items.keys():
-                item = collision_items[item_coords]["image"] if "key" in kwds.keys() else collision_items[item_coords]
+                return cls.Result(
+                    result,
+                    item_coords,
+                    list(collision_items.keys()).index(item_coords),
+                    item.get_size(),
+                    side,
+                    overlap
+                )
 
-                try:
-                    size = item.get_size()
-                except AttributeError:
-                    size = (int(item[0]), int(item[1]))
+    @classmethod
+    def rect_collision(cls, coords: tuple, size: tuple, collision_items: dict, *args, **kwds) -> namedtuple:
+        """
+        It makes collision test between the image and the collision items, you can set return result visa versa. 
 
-                x_bool = x_coor >= item_coords[0] and x_coor< item_coords[0] + size[0]
-                y_bool = y_coor >= item_coords[1] and y_coor< item_coords[1] + size[1]
-                if x_bool and y_bool:
-                    coords_ = (coords[0] - item_coords[0], y_coor - item_coords[1])
-                    return cls.Result(coords_, item_coords, list(collision_items.keys()).index(item_coords), size, "", "")
+        Examples of the Parameters;
+        ---------------------------
+        >>> coords = (1, 2) #x and y coordinates
+        >>> size = (1, 1) #height and width
+        >>> collision_items = {(3, 4): pygame_image_1, (5, 6): pygame_image_2}
+        """
+
+        if type(collision_items) is not dict:
+            raise TypeError(
+                f"collision_items parameter type must be dict, not {type(collision_items)}"
+            )
+
+        x_coor, y_coor = coords
+
+        self_rect = pygame.Rect(x_coor, y_coor, size[0], size[1])
+
+        for idx, item_coords in enumerate(collision_items.keys()):
+            item = (
+                collision_items[item_coords]["image"]
+                if "key" in kwds
+                else collision_items[item_coords]
+            )
+
+            try:
+                item_size = item.get_size()
+            except AttributeError:
+                item_size = (int(item[0]), int(item[1]))
+
+            item_rect = pygame.Rect(
+                item_coords[0],
+                item_coords[1],
+                item_size[0],
+                item_size[1]
+            )
+
+            if self_rect.colliderect(item_rect):
+                overlap = self_rect.clip(item_rect)
+
+                # collision'un item içindeki lokal koordinatı
+                local_coords = (
+                    overlap.x - item_rect.x,
+                    overlap.y - item_rect.y
+                )
+
+                return cls.Result(
+                    local_coords,        # item_collision_coords
+                    item_coords,         # item_coords
+                    idx,                 # item_index
+                    item_size,           # item_size
+                    "",                  # side
+                    overlap              # overlap_rect
+                )
+
+        return None
 
     @overload
     def throwing(self, speed: int or float, velocity: int or float) -> tuple: 
@@ -740,7 +787,7 @@ def update(tiles):
                 if is_cursor_in_surface(x_result, y_result):
                     if event.button == 1: 
                         collision_area = _memory["text"]["images"]["clickables"]
-                        collision = Physic.collision((x_result - _memory["scroll"][0], y_result - _memory["scroll"][1]), None, collision_area, True, basic = True)
+                        collision = Physic.rect_collision((x_result - _memory["scroll"][0], y_result - _memory["scroll"][1]), (1, 1), collision_area, True)
 
                         if collision:
                             if win_name:

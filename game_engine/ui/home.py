@@ -102,11 +102,11 @@ class Window:
                 elif top_navbar_action_surf.item_coords == (2, 23):
                     self.command = "game_start"
 
-        top_navbar_surf, top_navbar_coor = UI.window("top_navbar", (-10, 0), (1386, 40), (0, 0, 0), 1)
+        top_navbar_surf, top_navbar_coor = UI.window("top_navbar", (0, 0), (1366, 40), (0, 0, 0), 1)
         UI.window("fileActionButton", (15, 8), (70, 20), (0, 0, 0), "button", win_name = "top_navbar")
         UI.text("File", 15, (3, 0), (200, 200, 200), win_name = "fileActionButton", font = "impact")
         UI.window("versionTextButton", (self.surface_sizes[0] - 100, 8), (100, 20), (0, 0, 0), win_name = "top_navbar")
-        UI.text("Work in Progress", 15, (3, 0), (200, 200, 200), win_name = "versionTextButton", font = "impact")
+        UI.text("Work in Progress", 12, (3, 0), (200, 200, 200), win_name = "versionTextButton", font = "impact")
         try:
             self.surface.blit(top_navbar_surf, top_navbar_coor)
         except TypeError:

@@ -98,7 +98,7 @@ class Window:
             if  image_name != ".DS_Store":
                 if not image_name.endswith(".png"):
                     x, y = x_collision(image_.closeFolder, x, y)
-                    collision = Physic.collision((x, y), image_.closeFolder, self.tools_dict, key = True)
+                    collision = Physic.pixel_perfect_collision((x, y), image_.closeFolder, self.tools_dict, key = True)
                     if collision:
                         y = collision.item_coords[1] + self.tools_dict[collision.item_coords]["image"].get_size()[1]
 
@@ -111,7 +111,7 @@ class Window:
                     img = pygame.image.load("images/built_in_images/{}".format(image_name)).convert_alpha()
 
                     x, y = x_collision(img, x, y)
-                    collision = Physic.collision((x, y), img, self.tools_dict, key = True)
+                    collision = Physic.pixel_perfect_collision((x, y), img, self.tools_dict, key = True)
                     if collision:
                         y = collision.item_coords[1] + self.tools_dict[collision.item_coords]["image"].get_size()[1]
 
@@ -149,7 +149,7 @@ class Window:
 
             image = self.tools_dict[self.tileset_choosing.item_coords]["({}, {}).png".format(self.tile_x_size * self.win_scale, self.tile_y_size * self.win_scale)]
             scaled_image = pygame.transform.scale(image, np.array([self.tile_x_size, self.tile_y_size]) * self.win_scale)
-            if Physic.collision((var, yCoordsMin), scaled_image, {(0, 0): tileDrawingIMG}):
+            if Physic.pixel_perfect_collision((var, yCoordsMin), scaled_image, {(0, 0): tileDrawingIMG}):
                 filteredPolygonRect.append((var, yCoordsMin))
             var += self.tile_x_size * self.win_scale
 
@@ -280,7 +280,7 @@ class Window:
                     self.cursor = image_.normalCursor
             elif e_type == pygame.MOUSEBUTTONDOWN:
                 e_button = event.button
-                cursor_interaction = Physic.collision(self.cursor_pos, self.cursor, self.tileDictLocal)
+                cursor_interaction = Physic.pixel_perfect_collision(self.cursor_pos, self.cursor, self.tileDictLocal)
 
                 if e_button == 1:
                     self.cursor = image_.normalCursorL
