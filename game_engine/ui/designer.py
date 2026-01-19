@@ -374,18 +374,18 @@ class Window:
             layer_ = self.tile_dict[key]
 
             if self.is_hitbox_on:
-                for coord, size in layer_["hitbox"].items():
-                    x_coord, y_coord = coord.strip("()").split(", ")
+                for coord, surface in layer_["hitbox"].items():
+                    x_coord, y_coord = coord
 
                     if not layer_["parallax"]:
                         coords_blit = np.array((int(x_coord), int(y_coord))) * self.win_scale - np.array(Camera.coords) * self.win_scale
                     else:
                         coords_blit = np.array((int(x_coord), int(y_coord))) * self.win_scale - np.array(Camera.coords) * self.win_scale // layer_["parallax"]
-                    x_coord, y_coord = (int(coords_blit[0]), int(coords_blit[1]))
+                    coord = (int(coords_blit[0]), int(coords_blit[1]))
 
-                    height, width = size
+                    surface = pygame.transform.scale(surface, np.array(surface.get_size()) * self.win_scale)
 
-                    pygame.draw.rect(self.screen, (255, 0, 0), (int(x_coord), int(y_coord), height, width))
+                    self.screen.blit(surface, coord)
         #-------------------------------------------------------------------------------------------------------------------------------------------
 
         #-Tile Info Window------------------------------------------------------------------------------------------------------

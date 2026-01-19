@@ -55,37 +55,31 @@ class Temp:
     def collision(self):
         if self.anim:
             if self.coords[1] <= 1000:
-                fixed = dict()
-                for i, j in self.tiles[5]["hitbox"].items():
-                    a = i.strip("()").split(", ")
-                    a = (int(a[0]), int(a[1]))
-                    surface = pygame.Surface((j[0] // 2, j[1] // 2), pygame.SRCALPHA)
-                    surface.fill((255, 255, 255))
-                    fixed.update({a: surface})
+                for i in self.tiles.keys():
+                    if self.tiles[i]["hitbox"]:
+                        result = Physic().pixel_perfect_collision([self.coords[0], self.coords[1]], self.image, self.tiles[i]["hitbox"], True)
+                        if result:
+                            overlap = result.overlap_rect
+                            item_x, item_y = result.item_coords
+                            item_w, item_h = result.item_size
 
-                result = Physic().pixel_perfect_collision([self.coords[0], self.coords[1]], self.image, fixed, True)
-                if result:
-                    overlap = result.overlap_rect
-                    item_x, item_y = result.item_coords
-                    item_w, item_h = result.item_size
-
-                    if overlap.height < overlap.width: #y collision
-                        if self.velocity_y > 0: # landing
-                            self.coords[1] = item_y - self.image_sizes[1]
-                            self.on_ground = True
-                        elif self.velocity_y < 0: # head hit
-                            self.coords[1] = item_y + item_h
-                        
-                        self.velocity_y = 0
-                    else: #x collision
-                        if self.velocity_x > 0: # left hit
-                            self.coords[0] -= 1
-                        elif self.velocity_x < 0: # right hit
-                            self.coords[0] += 1
-                        
-                        self.velocity_x = 0
-                else:
-                    self.on_ground = False
+                            if overlap.height < overlap.width: #y collision
+                                if self.velocity_y > 0: # landing
+                                    self.coords[1] = item_y - self.image_sizes[1]
+                                    self.on_ground = True
+                                elif self.velocity_y < 0: # head hit
+                                    self.coords[1] = item_y + item_h
+                                
+                                self.velocity_y = 0
+                            else: #x collision
+                                if self.velocity_x > 0: # left hit
+                                    self.coords[0] -= 1
+                                elif self.velocity_x < 0: # right hit
+                                    self.coords[0] += 1
+                                
+                                self.velocity_x = 0
+                    else:
+                        self.on_ground = False
             else:
                 self.run = False
                 self.anim = ""
