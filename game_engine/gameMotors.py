@@ -1,5 +1,5 @@
 from typing import overload
-import pygame, os, numpy as np, random, json, time, repackage
+import pygame, os, numpy as np, random, json, time, repackage, math
 from unicodedata import name
 from collections import namedtuple
 from pygame import gfxdraw
@@ -179,90 +179,120 @@ The Class Variable;
 >>> Light.image #The default light image but you can change with monkey-patching. 
 
 Function(s);/
-`source`
+source
     """
+    def __init__(self, screen_size):
+        self.width, self.height = screen_size
+        self.darkness = pygame.Surface(screen_size, pygame.SRCALPHA)
+        image = pygame.image.load("game_engine/ui/images/light.png").convert_alpha()
+        self.light_image = pygame.transform.scale(image, screen_size)
 
-    _m_surf = None
-    _p_surf = None
-    image = pygame.image.load("game_engine/ui/images/light.png").convert_alpha()
+    def segments_from_image(self, image, pos):
+        mask = pygame.mask.from_surface(image)
+        outline = mask.outline()[::10]
 
-    @classmethod
-    def source(cls, light_coord: tuple or list, light_size: int, color: tuple or dict, items: dict, *args, **kwds) -> pygame.Surface:
-        """
-        Returns an interactable light surface. (It can interact only the items parameter.)
+        segs = []
+        for i in range(len(outline)):
+            x1, y1 = outline[i]
+            x2, y2 = outline[(i + 1) % len(outline)]
+            segs.append({
+                "a": {"x": x1 + pos[0], "y": y1 + pos[1]},
+                "b": {"x": x2 + pos[0], "y": y2 + pos[1]}
+            })
+        return segs
 
-        Examples of the Parameters;
-        ---------------------------
-        >>> light_coord = (1, 2) #x and y coordinates
-        >>> light_size = 100
-        >>> items = {(3, 4): pygame_image_1, (5, 6): pygame_image_2}
-        """
+    def screen_border_segments(self):
+        w, h = self.width, self.height
+        return [
+            {"a": {"x": 0, "y": 0}, "b": {"x": w, "y": 0}},
+            {"a": {"x": w, "y": 0}, "b": {"x": w, "y": h}},
+            {"a": {"x": w, "y": h}, "b": {"x": 0, "y": h}},
+            {"a": {"x": 0, "y": h}, "b": {"x": 0, "y": 0}},
+        ]
 
-        size = (light_size * 2,) * 2
+    def intersect(self, ray, segment):
+        r_px, r_py = ray["a"]
+        r_dx = ray["b"][0] - r_px
+        r_dy = ray["b"][1] - r_py
 
-        if cls.image.get_size() != size:
-            cls._m_surf = pygame.Surface(size).convert()
-            cls._m_surf.set_colorkey(color)
-            cls._m_surf.set_alpha(100)
+        s_px = segment["a"]["x"]
+        s_py = segment["a"]["y"]
+        s_dx = segment["b"]["x"] - s_px
+        s_dy = segment["b"]["y"] - s_py
 
-            cls._p_surf = pygame.Surface(np.array(size) + 100).convert_alpha()
+        cross = r_dx * s_dy - r_dy * s_dx
+        if abs(cross) < 1e-8:
+            return None
 
-            cls.image = pygame.transform.scale(cls.image, size)
+        try:
+            T2 = (r_dx * (s_py - r_py) + r_dy * (r_px - s_px)) / (s_dx * r_dy - s_dy * r_dx)
+            T1 = (s_px + s_dx * T2 - r_px) / r_dx
+        except ZeroDivisionError:
+            return None
 
-        cls._m_surf.fill(color)
-        cls._p_surf.fill((0, 0, 0, 0))
+        if T1 < 0 or not (0 <= T2 <= 1):
+            return None
 
-        cls._m_surf.blit(cls.image, (0, 0))
-        gfxdraw.aacircle(cls._m_surf, light_size, light_size, light_size - 3, color)
+        return (r_px + r_dx * T1, r_py + r_dy * T1, T1)
 
-        """a = pygame.image.tostring(cls._m_surf, "RGBA", False)
-        b = Image.fromstring("RGBA", (660, 660), a)"""
+    def visibility_polygon(self, light_pos, segments):
+        lx, ly = light_pos
+        angles = []
 
-        for item_name in items.keys():
-            if type(item_name) == str:
-                coords_ = items[item_name]["coords"]
-                image_ = pygame.image.load(items[item_name]["image"]).convert_alpha()
-                bool_ = kwds["alias"] != item_name
-            else:
-                coords_ = item_name
-                image_ = items[item_name]
-                bool_ = True
+        for seg in segments:
+            for p in (seg["a"], seg["b"]):
+                a = math.atan2(p["y"] - ly, p["x"] - lx)
+                angles.extend([a - 0.00001, a + 0.00001])
 
-            if bool_:
-                clarify = (coords_[0] - light_coord[0], coords_[1] - light_coord[1])
-                clarify_ = (clarify[0] + image_.get_size()[0], clarify[1] + image_.get_size()[1])
+        points = []
 
-                if clarify_[0] > 0 and clarify_[1] > 0 and clarify[0] < size[0] and clarify[1] < size[1]:
-                    mask = pygame.mask.from_surface(image_).outline()
+        for a in angles:
+            dx = math.cos(a)
+            dy = math.sin(a)
 
-                    img_size = image_.get_size()
+            ray = {
+                "a": (lx, ly),
+                "b": (lx + dx * 2000, ly + dy * 2000)
+            }
 
-                    x_radius = (coords_[0] + img_size[0] // 2 - light_coord[0] - light_size) * 2
-                    y_radius = (coords_[1] + img_size[1] // 2 - (light_coord[1] + light_size)) * 2
+            closest = None
+            for seg in segments:
+                hit = self.intersect(ray, seg)
+                if hit and (closest is None or hit[2] < closest[2]):
+                    closest = hit
 
-                    top_border = [light_coord[0] + light_size, 100 + y_radius]
-                    bottom_border = [light_coord[0] + light_size, light_size * 2 + 100 + y_radius]
+            if closest:
+                points.append((a, (closest[0], closest[1])))
 
-                    if y_radius < 0:
-                        top_border[0] += x_radius
-                        bottom_border[0] -= x_radius * (y_radius // 4)
-                    else:
-                        top_border[0] += x_radius * (y_radius // 4)
-                        bottom_border[0] += x_radius
+        points.sort(key=lambda x: x[0])
+        return [p for _, p in points]
 
-                    if x_radius < 0:
-                        polygon_rects = [(clarify + np.array(rect) + 100) for rect in mask[:len(mask) // 4]]
-                        line = [bottom_border, top_border]
-                    else:
-                        polygon_rects = [(clarify + np.array(rect) + 100) for rect in mask[len(mask) // 4 * 3:]]
-                        line = [top_border, bottom_border]
+    def render(self, light_pos, image, image_pos):
+        clarify = (image_pos[0] - light_pos[0], image_pos[1] - light_pos[1])
 
-                    pygame.draw.polygon(cls._p_surf, color, polygon_rects + line)
+        segments = self.screen_border_segments()
+        segments += self.segments_from_image(image, clarify)
 
-        cls._m_surf.blit(cls._p_surf, (-100, -100))
+        poly = self.visibility_polygon((self.width // 2, self.height // 2), segments) #Inserting the source in the middle coords
 
-        return cls._m_surf
+        mask_surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        mask_surf.fill((0, 0, 0, 0))
 
+        if len(poly) >= 3:
+            pygame.gfxdraw.filled_polygon(
+                mask_surf,
+                poly,
+                (255, 255, 255, 255)
+            )
+
+        light_cut = self.light_image.copy()
+        light_cut.blit(mask_surf, (0, 0), special_flags = pygame.BLEND_RGBA_MULT)
+
+        self.darkness.fill((0, 0, 0, 0))
+        self.darkness.blit(light_cut, (0, 0))
+
+        return self.darkness
+    
 class Physic:
     """
 Physic

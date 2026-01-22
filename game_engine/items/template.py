@@ -4,6 +4,7 @@ repackage.up()
 from gameMotors import *
 
 attributeMemory = {}
+temp_image = pygame.image.load("images/built_in_images/character.png").convert_alpha()
 class Pin:
     global attributeMemory
 
@@ -45,6 +46,8 @@ class Temp:
 
         self.direction = "Left"
         self.movementTimer = time.time()
+
+        self.light_system = None
 
         for animationPATH in self.animations:
             exec("self.{} = Animation('{}', 12)".format(animationPATH.split("/")[-1].replace(" ", "_"), animationPATH))
@@ -141,9 +144,21 @@ class Temp:
                     pass
 
             if self.lights:
-                bar = Light.source(np.array(self.coords) + self.lights["coords"] - self.lights["size"], self.lights["size"], self.lights["RGB"], data, alias = self.name)
+                if self.light_system is None:
+                    self.light_system = Light((self.lights["size"], self.lights["size"]))
+                
+                l_c_x, l_c_y = self.lights["coords"]
+                size_mid = self.lights["size"] // 2
+                c_x, c_y = self.coords
+                light_pos = (c_x + l_c_x - size_mid, c_y + l_c_y - size_mid) #Inserting the source in the middle coords
+                
+                light_surface = self.light_system.render(
+                    light_pos,
+                    temp_image,
+                    data["character"]["coords"]
+                )
 
-                return ((self.surface, self.coords), (bar, np.array(self.coords) + self.lights["coords"] - self.lights["size"]))
+                return ((self.surface, self.coords), (light_surface, light_pos))
             else:
                 return ((self.surface, self.coords), )
 
