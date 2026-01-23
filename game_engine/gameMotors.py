@@ -381,7 +381,7 @@ Function(s);/
             mask_surf.fill((0, 0, 0, 0))
             
             if len(poly) >= 3:
-                pygame.gfxdraw.filled_polygon(
+                gfxdraw.filled_polygon(
                     mask_surf,
                     poly,
                     (255, 255, 255, 255)

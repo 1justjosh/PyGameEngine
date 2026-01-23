@@ -1,4 +1,4 @@
-import pygame, pygame.locals
+import pygame
 
 class pygame_:
     event = []

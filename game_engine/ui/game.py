@@ -70,7 +70,7 @@ class Window:
                 abe = (coords[0] + image.get_width(), coords[1] + image.get_height())
                 foo = all((abe[0] >= 0, abe[1] >= 0))
                 bar = all((coords[0] <= self.surface_size[0], coords[1] <= self.surface_size[1]))
-                if foo and bar:
+                if foo and bar: #Game optimization: It does not render if the object is outside of the screen
                     self.surface.blit(image, coords)
         #------------------------------------------------------------------------------------------------------------------
 

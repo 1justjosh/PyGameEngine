@@ -2,6 +2,7 @@ import repackage
 
 repackage.up()
 from gameMotors import *
+from items.info import ITEMS
 
 attributeMemory = {}
 temp_image = pygame.image.load("images/built_in_images/character.png").convert_alpha()
@@ -20,8 +21,9 @@ class Pin:
         return attributeMemory[name]
 
 class Temp:
-    def __init__(self, name):
+    def __init__(self, name, data = []):
         self.name = name
+        ITEMS[name] = self
 
         with open("game_engine/items/info.json", "r") as file:
             data = json.loads(file.read())
@@ -135,7 +137,7 @@ class Temp:
                 data[self.name]["coords"] = self.coords
                 data[self.name]["health"] = self.health
                 data[self.name]["scale"] = self.scale
-                data[self.name]["image"] = self.anim.frame_PATH if self.anim else "images/built_in_images/{}.png".format(self.name)
+                data[self.name]["image"] = self.anim.frame_PATH if self.anim else f"images/built_in_images/{self.name}.png"
 
                 try:
                     with open("game_engine/items/info.json", "w") as fileWrite:
@@ -154,8 +156,8 @@ class Temp:
                 
                 light_surface = self.light_system.render(
                     light_pos,
-                    temp_image,
-                    data["character"]["coords"]
+                    ITEMS["character"].surface,
+                    ITEMS["character"].coords
                 )
 
                 return ((self.surface, self.coords), (light_surface, light_pos))
