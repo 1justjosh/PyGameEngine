@@ -172,22 +172,38 @@ Creates a light source.
 
 Basic Usage of the Class:
 -------------------------
->>> Light.source(...) #You must set the variables.
+>>> light_system = Light(...) #You must set the light size.
+>>> light_system.render(...) #You must set the coordinates and images.
 
 The Class Variable;
 -------------------
->>> Light.image #The default light image but you can change with monkey-patching. 
+>>> light_system.width #Width of the surface size. 
+>>> light_system.height #Height of the surface size. 
+>>> light_system.light_image #The default light image but you can change with monkey-patching. 
 
 Function(s);/
-source
+`segments_from_image`
+`screen_border_segments`
+`intersect`
+`visibility_polygon`
+`render`
     """
-    def __init__(self, screen_size):
-        self.width, self.height = screen_size
-        self.darkness = pygame.Surface(screen_size, pygame.SRCALPHA)
+    def __init__(self, size) -> None:
+        self.width, self.height = size
+        self.darkness = pygame.Surface(size, pygame.SRCALPHA)
         image = pygame.image.load("game_engine/ui/images/light.png").convert_alpha()
-        self.light_image = pygame.transform.scale(image, screen_size)
+        self.light_image = pygame.transform.scale(image, size)
 
-    def segments_from_image(self, image, pos):
+    def segments_from_image(self, image: pygame.image, pos: tuple) -> list:
+        """
+        Turns segments from the given image for shadow effect. 
+
+        Examples of the Parameters;
+        ---------------------------
+        >>> image = pygame.image.load("C:/Users/Osman/foo/bar.png").convert_alpha()
+        >>> pos = (3, 4)
+        """
+
         mask = pygame.mask.from_surface(image)
         outline = mask.outline()[::10]
 
@@ -201,7 +217,11 @@ source
             })
         return segs
 
-    def screen_border_segments(self):
+    def screen_border_segments(self) -> list:
+        """
+        Defines borders of the light. 
+        """
+
         w, h = self.width, self.height
         return [
             {"a": {"x": 0, "y": 0}, "b": {"x": w, "y": 0}},
@@ -210,7 +230,50 @@ source
             {"a": {"x": 0, "y": h}, "b": {"x": 0, "y": 0}},
         ]
 
-    def intersect(self, ray, segment):
+    def intersect(self, ray: dict, segment: dict) -> tuple:
+        """
+        Calculates the intersection point between a ray and a line segment.
+
+        This function is used in the shadow / visibility system to determine
+        where a light ray first hits an obstacle edge (segment). If there is
+        a valid intersection in front of the ray origin and within the segment
+        bounds, the closest hit point is returned.
+
+        Parameters;
+        -----------
+        ray : dict
+            Ray definition with two points:
+            {
+                "a": (x, y),   # ray origin (light position)
+                "b": (x, y)    # ray end point (direction * distance)
+            }
+
+        segment : dict
+            Line segment definition:
+            {
+                "a": {"x": x1, "y": y1},  # segment start
+                "b": {"x": x2, "y": y2}   # segment end
+            }
+
+        Returns;
+        --------
+        tuple or None
+            (hit_x, hit_y, t1)
+            - hit_x, hit_y : intersection coordinates
+            - t1           : distance factor along the ray
+            Returns None if there is no valid intersection.
+
+        Examples;
+        ---------
+        >>> ray = {"a": (100, 100), "b": (300, 100)}
+        >>> segment = {
+        ...     "a": {"x": 200, "y": 50},
+        ...     "b": {"x": 200, "y": 150}
+        ... }
+        >>> intersect(ray, segment)
+        (200.0, 100.0, 0.5)
+        """
+
         r_px, r_py = ray["a"]
         r_dx = ray["b"][0] - r_px
         r_dy = ray["b"][1] - r_py
@@ -235,7 +298,24 @@ source
 
         return (r_px + r_dx * T1, r_py + r_dy * T1, T1)
 
-    def visibility_polygon(self, light_pos, segments):
+    def visibility_polygon(self, light_pos: tuple, segments: list) -> list:
+        """
+        Calculates the visibility polygon from a light source position
+        using the given line segments for shadow casting.
+
+        The function casts rays towards segment endpoints with small
+        angle offsets and finds the closest intersections to build
+        the visible area.
+
+        Examples of the Parameters;
+        ---------------------------
+        >>> light_pos = (400, 300)
+        >>> segments = [
+        ...     {"a": {"x": 100, "y": 100}, "b": {"x": 300, "y": 100}},
+        ...     {"a": {"x": 300, "y": 100}, "b": {"x": 300, "y": 300}},
+        ... ]
+        """
+
         lx, ly = light_pos
         angles = []
 
@@ -267,7 +347,22 @@ source
         points.sort(key=lambda x: x[0])
         return [p for _, p in points]
 
-    def render(self, light_pos, image, image_pos):
+    def render(self, light_pos: tuple, image: pygame.image, image_pos: tuple) -> pygame.Surface:
+        """
+        Renders the light and shadow effect using the given image as
+        an occluder and returns the final light surface.
+
+        The function calculates shadow-casting segments from the image,
+        builds a visibility polygon, and applies it as a mask over
+        the light texture.
+
+        Examples of the Parameters;
+        ---------------------------
+        >>> light_pos = (400, 300)
+        >>> image = pygame.image.load("C:/Users/Osman/foo/bar.png").convert_alpha()
+        >>> image_pos = (120, 80)
+        """
+
         i_x, i_y = image_pos
         l_x, l_y = light_pos
         i_s_x, i_s_y = image.get_size()
