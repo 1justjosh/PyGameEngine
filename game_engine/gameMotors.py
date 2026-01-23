@@ -389,6 +389,15 @@ Function(s);/
                     (255, 255, 255, 255)
                 )
 
+                small = pygame.transform.smoothscale(
+                    mask_surf,
+                    (self.width // 2, self.height // 2)
+                )
+                mask_surf = pygame.transform.smoothscale(
+                    small,
+                    (self.width, self.height)
+                )
+
             light_cut = self.light_image.copy()
             light_cut.blit(mask_surf, (0, 0), special_flags = pygame.BLEND_RGBA_MULT)
 
