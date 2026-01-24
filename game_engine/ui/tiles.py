@@ -19,14 +19,14 @@ def read(return_dict = "worked"):
                         data_image = directory[-1]
                     else:
                         data_image = "image"
-                    with open("game_engine/items/info.json", "r") as file:
+                    with open("game_1/items/info.json", "r") as file:
                         try:
                             coords = json.loads(file.read())[directory[0].rstrip(".png")]["coords"]
                         except KeyError:
                             pass
 
                     tile_dict_RAW[key]["layers"].update({"({}, {})".format(coords[0], coords[1]): datas[key]["layers"][data]})
-                    tile_dict[int(key)]["layers"].update({(int(coords[0]), int(coords[1])): pygame.image.load("images/built_in_images/" + datas[key]["layers"][data]).convert_alpha()})
+                    tile_dict[int(key)]["layers"].update({(int(coords[0]), int(coords[1])): pygame.image.load("game_1/images/built_in_images/" + datas[key]["layers"][data]).convert_alpha()})
                 
                 for i, j in datas[key]["hitbox"].items():
                     a = i.strip("()").split(", ")

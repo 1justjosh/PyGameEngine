@@ -792,7 +792,7 @@ Function(s);/
                 try:
                     if cls.memory["info_name"]["text"]["name"] + "_c_e" != name:
                         raise FileNotFoundError
-                    with open("game_engine/items/{}.py".format(cls.memory["info_name"]["text"]["name"]), "r", encoding = "utf-8") as file:
+                    with open("game_1/items/{}.py".format(cls.memory["info_name"]["text"]["name"]), "r", encoding = "utf-8") as file:
                         data = file.readlines()
 
                         start = data.index("    exec('''\n") + 1
@@ -830,12 +830,13 @@ Function(s);/
 
                     if key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_SHIFT:
                         name = cls.memory["info_name"]["text"]["name"]
-                        with open("game_engine/items/{}.py".format(name), "w", encoding = "utf-8") as file:
+                        with open("game_1/items/{}.py".format(name), "w", encoding = "utf-8") as file:
                             file.write("""
 import repackage
 
 repackage.up()
-from items.template import *
+repackage.up()
+from game_engine.items.template import *
 
 self = Temp("{}")
 
@@ -845,7 +846,7 @@ def update(tiles):
 {}
     ''')""".format(name, _memory["text"]["name"]))
 
-                            with open("game_engine/items/info.json", "r") as json_file:
+                            with open("game_1/items/info.json", "r") as json_file:
                                 data = json.loads(json_file.read())
 
                                 if not name in data.keys():
@@ -865,7 +866,7 @@ def update(tiles):
                                             "image": "images/built_in_images/{}.png".format(name), 
                                             "lights": {}}
                                         })
-                                    with open("game_engine/items/info.json", "w") as json_file_w:
+                                    with open("game_1/items/info.json", "w") as json_file_w:
                                         json.dump(data, json_file_w)
                     elif key == pygame.K_BACKSPACE:
                         if _memory["text"]["name"][-1] != " " and _memory["text"]["images"]["not_clickables"]:

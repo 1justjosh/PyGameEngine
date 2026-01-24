@@ -11,7 +11,7 @@ class Window:
         self.surface = pygame.Surface(np.array(self.screen_size) // 2).convert()
         self.surface_size = self.surface.get_size()
         self.tile_dict_RAW, self.tile_dict = tiles.read(return_dict = "both")
-        self.items = os.listdir("game_engine/items")
+        self.items = os.listdir("game_1/items")
         self.command = "game_start"
         self.func_dict = {}
 
@@ -53,7 +53,7 @@ class Window:
                 item = self.tile_dict_RAW[str(key)]["layers"][str(coords)].replace(".png", ".py")
 
                 if item in self.items:
-                    self.funcImplementer(item, "game_engine/items")
+                    self.funcImplementer(item, "game_1/items")
                     func = self.func_dict[item.rstrip(".py")]
                     obj = func.update(self.tile_dict)
                     image, coords = obj[0]
