@@ -1046,7 +1046,7 @@ def update(tiles):
         Examples of the Parameters;
         ---------------------------
         >>> text = "Hello World"
-        >>> scale = 1
+        >>> scale = 13
         >>> coords = (1, 2) #x and y coordinates
         >>> color = (255, 255, 255) #Red, Green, Blue values
         >>> win_name = "scuzz"

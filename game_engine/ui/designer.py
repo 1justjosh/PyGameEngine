@@ -399,21 +399,30 @@ Scale: {}
 Animation Amount: {}""".format(self.objectSize, self.objectCoords, self.objectHealth, self.objectScale, len(self.objectAnims)), 15, (5, 50), (170, 170, 170), "info")
             UI.window("info_name", (10, 10), (165, 30), (90, 90, 90), win_name = "info")
             UI.text(self.objectName, 21, (5, 0), (170, 170, 170), "info_name", font = "impact")
-            UI.window("code_editor_open_button", (5, 260), (80, 20), (110, 110, 110), "button", win_name = "info")
+            UI.window("code_editor_open_button", (5, 230), (175, 20), (110, 110, 110), "button", win_name = "info")
             UI.add_images({
-                (0, 0): image_.codeEditorOpenButton
+                (0, 0): image_.codeEditorButton
                 }, "code_editor_open_button")
+            UI.text("Code Editor", 13, (25, 5), (255, 255, 255), "code_editor_open_button")
+            UI.window("light_editor_open_button", (5, 260), (80, 20), (110, 110, 110), "button", win_name = "info")
+            UI.add_images({
+                (0, 0): image_.lightEditorButton
+                }, "light_editor_open_button")
+            UI.text("Light", 13, (25, 5), (255, 255, 255), "light_editor_open_button")
             UI.window("animator_open_button", (100, 260), (80, 20), (110, 110, 110), "button", win_name = "info")
-            UI.window("light_editor_open_button", (5, 230), (80, 20), (110, 110, 110), "button", win_name = "info")
+            UI.add_images({
+                (0, 0): image_.animatorButton
+                }, "animator_open_button")
+            UI.text("Animator", 13, (25, 5), (255, 255, 255), "animator_open_button")
 
             try:
                 self.screen.blit(info_surf, info_coor)
             except TypeError: #It will trigger when one of the buttons clicked.
-                if info_surf.item_coords == (5, 260):
+                if info_surf.item_coords == (5, 230):
                     self.code_editor_bool = True
                 elif info_surf.item_coords == (100, 260):
                     self.animator_bool = True
-                elif info_surf.item_coords == (5, 230):
+                elif info_surf.item_coords == (5, 260):
                     self.light_editor_bool = True
         #----------------------------------------------------------------------------------------------------------------
 
@@ -441,9 +450,12 @@ Animation Amount: {}""".format(self.objectSize, self.objectCoords, self.objectHe
         #-Layers Window--------------------------------------------------------------------------------------------------------------------------------
         layers_surf, layers_coor = UI.window("layers", tuple(np.array(self.screen.get_size()) - 200), (200, 150), (30, 30, 30), 2)
         UI.window("hit_box_button", (5, 5), (20, 20), (110, 110, 110), "button", win_name = "layers")
+        UI.add_images({
+                (0, 0): image_.hitboxButton
+                }, "hit_box_button")
         UI.window("new_layer_button", (160, 5), (20, 20), (110, 110, 110), "button", win_name = "layers")
-        UI.text("+", 18, (0, 0), (255, 255, 255), "new_layer_button")
-        layerTuneCrop = 25
+        UI.text("+", 18, (5, 0), (255, 255, 255), "new_layer_button")
+        layerTuneCrop = 35
         for i in range(1, self.layer_amount + 1):
             UI.window("layer{}_visibility".format(i), (5, layerTuneCrop), (20, 20), (100, 100, 100), "button", win_name = "layers")
             UI.add_images({
@@ -518,19 +530,25 @@ Animation Amount: {}""".format(self.objectSize, self.objectCoords, self.objectHe
 
             if self.objectAnims:
                 UI.window(anim_folders, (5, 25), (775, 160), (30, 30, 30), win_name = "animator")
-                for anim, coords in zip(self.objectAnims, range(len(self.objectAnims))):
+                for coords, anim in enumerate(self.objectAnims):
                     anim = anim.split("/")[-1]
-                    UI.window(anim, (coords * 64, 40), (84, 84), (130, 130, 130), "button", win_name = anim_folders)
+                    UI.window(anim, (coords * 86, 40), (76, 100), (130, 130, 130), "button", win_name = anim_folders)
                     UI.add_images({
-                        (0, 0): image_.animFolder
+                        (5, 5): image_.animFolder
                     }, anim)
-                    UI.text(anim, 18, (0, 64), (255, 255, 255), anim)
+                    UI.text(anim, 14, (0, 80), (255, 255, 255), anim)
             elif self.animation_folder:
                 UI.delete_images(((5, 25), ), "animator")
                 UI.window("anim_editor", (5, 25), (775, 160), (30, 30, 30), win_name = "animator")
 
                 UI.window("edit_play_b", (350, 0), (30, 30), (0, 30, 5), "button", win_name = "anim_editor")
+                UI.add_images({
+                        (5, 5): image_.playButton
+                    }, "edit_play_b")
                 UI.window("edit_pause_b", (390, 0), (30, 30), (0, 30, 5), "button", win_name = "anim_editor")
+                UI.add_images({
+                        (5, 5): image_.pauseButton
+                    }, "edit_pause_b")
                 UI.window(anim_frames, (30, 100), self.animation_.image_size, (66, 73, 73), win_name = "anim_editor")
                 for i in range(len(os.listdir(self.animation_folder))): 
                     UI.window("frame_{}".format(i), (45 * i, 0), (50, self.animation_.image_size[1]), (255, 87, 51), 3, min_sizes = (5, self.animation_.image_size[1]), max_sizes = (1000, self.animation_.image_size[1]), win_name = anim_frames)
