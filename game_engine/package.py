@@ -6,7 +6,8 @@ from pygame import gfxdraw
 
 from ui.images.init import *
 repackage.up()
-from ui.event import *
+from event import *
+from game_state import GameState
 
 pygame.init()
 
@@ -191,7 +192,7 @@ Function(s);/
     def __init__(self, size) -> None:
         self.width, self.height = size
         self.darkness = pygame.Surface(size, pygame.SRCALPHA)
-        image = pygame.image.load("game_engine/ui/images/light.png").convert_alpha()
+        image = pygame.image.load("../game_engine/ui/images/light.png").convert_alpha()
         self.light_image = pygame.transform.scale(image, size)
 
     def segments_from_image(self, image: pygame.image, pos: tuple) -> list:
@@ -614,7 +615,7 @@ class UI:
 UI
 ==
 
-Creates UI tools. Which they are window and text. DEĞİŞECEK
+Creates UI tools. Which they are window and text.
 
 Basic Usage of the Class:
 -------------------------
@@ -640,7 +641,7 @@ Function(s);/
     memory = {}
     cursor_pos = (0, 0)
     selam = 1
-    pointer = Animation("game_engine/ui/images/pointer", 4)
+    pointer = Animation("../game_engine/ui/images/pointer", 4)
 
     @classmethod
     def delete_images(cls, coords: list or tuple, win_name: str) -> list:
@@ -792,7 +793,7 @@ Function(s);/
                 try:
                     if cls.memory["info_name"]["text"]["name"] + "_c_e" != name:
                         raise FileNotFoundError
-                    with open("game_1/items/{}.py".format(cls.memory["info_name"]["text"]["name"]), "r", encoding = "utf-8") as file:
+                    with open("items/{}.py".format(cls.memory["info_name"]["text"]["name"]), "r", encoding = "utf-8") as file:
                         data = file.readlines()
 
                         start = data.index("    exec('''\n") + 1
@@ -830,7 +831,7 @@ Function(s);/
 
                     if key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_SHIFT:
                         name = cls.memory["info_name"]["text"]["name"]
-                        with open("game_1/items/{}.py".format(name), "w", encoding = "utf-8") as file:
+                        with open(f"items/{name}.py", "w", encoding = "utf-8") as file:
                             file.write("""
 import repackage
 
@@ -846,7 +847,7 @@ def update(tiles):
 {}
     ''')""".format(name, _memory["text"]["name"]))
 
-                            with open("game_1/items/info.json", "r") as json_file:
+                            with open("items/info.json", "r") as json_file:
                                 data = json.loads(json_file.read())
 
                                 if not name in data.keys():
@@ -866,7 +867,7 @@ def update(tiles):
                                             "image": "images/built_in_images/{}.png".format(name), 
                                             "lights": {}}
                                         })
-                                    with open("game_1/items/info.json", "w") as json_file_w:
+                                    with open("items/info.json", "w") as json_file_w:
                                         json.dump(data, json_file_w)
                     elif key == pygame.K_BACKSPACE:
                         if _memory["text"]["name"][-1] != " " and _memory["text"]["images"]["not_clickables"]:
@@ -1064,7 +1065,7 @@ def update(tiles):
             x_coor, y_coor = coords
 
             if font.endswith("anim"):
-                anim = Animation("game_engine/ui/images/pixelFont_{}/latin_capital_letter_a".format(font.lower()), 2, scale, stop_iteration = True)
+                anim = Animation("../game_engine/ui/images/pixelFont_{}/latin_capital_letter_a".format(font.lower()), 2, scale, stop_iteration = True)
                 raw_text = [*text]
                 for index in range(len(raw_text)):
                     letter = raw_text[index]
@@ -1077,7 +1078,7 @@ def update(tiles):
                         boolean = False
 
                     if boolean:
-                        path = "game_engine/ui/images/pixelFont_{}/{}".format(font.lower(), name(letter).lower().replace(" ", "_"))
+                        path = "../game_engine/ui/images/pixelFont_{}/{}".format(font.lower(), name(letter).lower().replace(" ", "_"))
                         anim = Animation(path, 2, scale, stop_iteration = True)
 
                         compeleted_text.update({(x_coor, y_coor): anim})

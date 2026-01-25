@@ -1,4 +1,4 @@
-import pygame, pygame.locals, repackage, numpy as np, importlib, os, json
+import pygame, repackage, os
 
 timer = pygame.time.Clock()
 surface_size = (1366, 768)
@@ -6,11 +6,14 @@ screen = pygame.display.set_mode(surface_size)
 pygame.display.set_caption("Forklift")
 pygame.mouse.set_visible(False)
 
+os.chdir("game_1")
+
 from images.init import *
 repackage.up()
 from package import *
 
 import game_engine.ui.home as home, game, designer
+
 home_ = home.Window(screen)
 game_ = game.Window(screen)
 designer_ = designer.Window(screen)

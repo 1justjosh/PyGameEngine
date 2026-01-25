@@ -2,6 +2,7 @@ import repackage
 
 repackage.up()
 from package import *
+from game_state import GameState
 from items.info import ITEMS
 
 attributeMemory = {}
@@ -24,7 +25,7 @@ class Temp:
         self.name = name
         ITEMS[name] = self
 
-        with open("game_1/items/info.json", "r") as file:
+        with open("items/info.json", "r") as file:
             data = json.loads(file.read())
 
             self.image_sizes = data[self.name]["sizes"]
@@ -34,7 +35,7 @@ class Temp:
             self.animations = data[self.name]["animations"]
             self.lights = data[self.name]["lights"]
             self.tiles = {}
-            self.image = pygame.image.load("game_1/images/built_in_images/{}.png".format(self.name)).convert_alpha()
+            self.image = pygame.image.load(data[self.name]["image"]).convert_alpha()
             self.velocity_x = 0
             self.velocity_y = 0
 
@@ -89,14 +90,19 @@ class Temp:
                 self.anim = ""
 
     def info(self, infoName):
-        with open("game_1/items/info.json", "r") as file:
-            data = json.loads(file.read())[infoName]
-
-            return {"sizes": data["sizes"], 
-                    "coords": data["coords"], 
-                    "health": int(data["health"]), 
-                    "scale": int(data["scale"]), 
-                    "animations": data["animations"]}
+        if infoName in ITEMS.keys():
+            data = ITEMS[infoName]
+            return {"sizes": data.image_sizes, 
+                    "coords": data.coords, 
+                    "health": int(data.health), 
+                    "scale": int(data.scale), 
+                    "animations": data.animations}
+        else:
+            return {"sizes": (0, 0), 
+                    "coords": (0, 0), 
+                    "health": 100, 
+                    "scale": 1, 
+                    "animations": ""}
 
     def decorate(self, func):
         def wrapper(tiles):
@@ -129,7 +135,7 @@ class Temp:
             self.collision()
             #-----------------------------------------------------------------------------------------------------
 
-            with open("game_1/items/info.json", "r") as fileRead:
+            with open("items/info.json", "r") as fileRead:
                 data = json.loads(fileRead.read())
 
                 data[self.name]["sizes"] = self.image_sizes
@@ -139,7 +145,7 @@ class Temp:
                 data[self.name]["image"] = self.anim.frame_PATH if self.anim else f"images/built_in_images/{self.name}.png"
 
                 try:
-                    with open("game_1/items/info.json", "w") as fileWrite:
+                    with open("items/info.json", "w") as fileWrite:
                         json.dump(data, fileWrite)
                 except PermissionError:
                     pass

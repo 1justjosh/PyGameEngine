@@ -3,7 +3,7 @@ from PIL import Image
 from PyQt5 import QtWidgets
 
 from images.init import *
-import tiles
+import game_1.datas.tiles as tiles
 repackage.up()
 from package import *
 
@@ -46,16 +46,16 @@ class Window:
         self.cursor = image_.normalCursor
         self.cursor_pos = np.array(self.screen.get_size()) // 2
 
-        self.animation_ = Animation("game_engine/ui/images/animationTimer", 1, 6)
+        self.animation_ = Animation("../game_engine/ui/images/animationTimer", 1, 6)
 
         self.imageLoad()
 
     def imageLoad(self):
-        image = Image.open("game_1/images/tileSet.png")
+        image = Image.open("images/tileSet.png")
         rects = image.size
 
         try:
-            os.mkdir("game_1/images/built_in_images/0set")
+            os.mkdir("images/built_in_images/0set")
         except FileExistsError:
             image = None
 
@@ -68,7 +68,7 @@ class Window:
                 cropped_image = image.crop((var_1, var_2, var_1 + self.tile_x_size, var_2 + self.tile_y_size))
                 while True:
                     try:
-                        cropped_image.save("game_1/images/built_in_images/0set/{}.png".format((var_1, var_2)))
+                        cropped_image.save(f"images/built_in_images/0set/{(var_1, var_2)}.png")
                         break
                     except PermissionError:
                         continue
@@ -84,7 +84,7 @@ class Window:
         y = 10
         def x_collision(image, x, y):
             if x + image.get_size()[0] < 300:
-                if os.listdir("game_1/images/built_in_images").index(image_name) != 0:
+                if os.listdir("images/built_in_images").index(image_name) != 0:
                     x += list(self.tools_dict.values())[-1]["image"].get_size()[0]
                 else:
                     x += 5
@@ -94,7 +94,7 @@ class Window:
 
             return (x, y)
 
-        for image_name in os.listdir("game_1/images/built_in_images"):
+        for image_name in os.listdir("images/built_in_images"):
             if  image_name != ".DS_Store":
                 if not image_name.endswith(".png"):
                     x, y = x_collision(image_.closeFolder, x, y)
@@ -104,11 +104,11 @@ class Window:
 
                     self.tools_dict.update({(x, y): {"image": image_.closeFolder, "dir_name": image_name}})
                     
-                    for tileImageName in os.listdir("game_1/images/built_in_images/{}".format(image_name)):
-                        img = pygame.image.load("game_1/images/built_in_images/{}/{}".format(image_name, tileImageName)).convert_alpha()
+                    for tileImageName in os.listdir(f"images/built_in_images/{image_name}"):
+                        img = pygame.image.load(f"images/built_in_images/{image_name}/{tileImageName}").convert_alpha()
                         self.tools_dict[(x, y)].update({tileImageName: img})
                 else:
-                    img = pygame.image.load("game_1/images/built_in_images/{}".format(image_name)).convert_alpha()
+                    img = pygame.image.load(f"images/built_in_images/{image_name}").convert_alpha()
 
                     x, y = x_collision(img, x, y)
                     collision = Physic.pixel_perfect_collision((x, y), img, self.tools_dict, key = True)
@@ -299,7 +299,7 @@ class Window:
                             self.objectSize = image.image_size if isinstance(image, Animation) else image.get_size()
 
                             try:
-                                with open("game_1/items/info.json", "r") as json_file:
+                                with open("items/info.json", "r") as json_file:
                                     data = json.loads(json_file.read())
 
                                     self.objectHealth = data[self.objectName]["health"]
@@ -588,13 +588,13 @@ Animation Amount: {}""".format(self.objectSize, self.objectCoords, self.objectHe
                     app = QtWidgets.QApplication(sys.argv)
 
                     anim_PATH = Window_().filePATH
-                    with open("game_1/items/info.json", "r") as json_file:
+                    with open("items/info.json", "r") as json_file:
                         data = json.loads(json_file.read())
 
                         data[self.objectName]["animations"].append(anim_PATH)
                         self.objectAnims = data[self.objectName]["animations"].copy()
 
-                        with open("game_1/items/info.json", "w") as json_file_w:
+                        with open("items/info.json", "w") as json_file_w:
                             json.dump(data, json_file_w)
                 elif animator_surf.item_coords[1] == 40:
                     self.animation_folder = self.objectAnims[animator_surf.item_index]
@@ -630,7 +630,7 @@ Animation Amount: {}""".format(self.objectSize, self.objectCoords, self.objectHe
             try:
                 self.screen.blit(light_editor_surf, light_editor_coor)
             except TypeError: #It will trigger when one of the buttons clicked.
-                with open("game_1/items/info.json", "r") as json_file:
+                with open("items/info.json", "r") as json_file:
                     data = json.loads(json_file.read())
 
                     data[self.objectName]["lights"].update({
@@ -639,7 +639,7 @@ Animation Amount: {}""".format(self.objectSize, self.objectCoords, self.objectHe
                         "RGB": (int(R), int(G), int(B))
                     })
 
-                    with open("game_1/items/info.json", "w") as json_file_w:
+                    with open("items/info.json", "w") as json_file_w:
                         json.dump(data, json_file_w)
 
                 self.light_editor_bool = False
@@ -678,7 +678,7 @@ Animation Amount: {}""".format(self.objectSize, self.objectCoords, self.objectHe
         #-----------------------------------
 
         if self.command == "designer_close":
-            with open("game_engine/ui/tiles.json", "w") as file:
+            with open("../game_engine/ui/tiles.json", "w") as file:
                 json.dump(self.tile_dict_RAW, file)
 
         return self.command

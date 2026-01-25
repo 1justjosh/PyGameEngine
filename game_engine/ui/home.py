@@ -17,7 +17,7 @@ class Window:
         self.blur_screen = pygame.Surface((1366, 768)).convert_alpha()
 
         #-Requested News------------------------------------------------------------
-        with open("game_engine/news.txt", "r", encoding = "utf-8") as file:
+        with open("../game_engine/news.txt", "r", encoding = "utf-8") as file:
             self.news = "".join(file.readlines())
         #---------------------------------------------------------------------------
 
