@@ -46,28 +46,35 @@ pip install -r requirements.txt
 
 ```
 PyGameEngine/
-├── game_engine/                # Core game engine package
+├── game_1/                     # Example game
+│   ├── datas/                  # Game entities & world objects
+│   │   ├── tiles.py            # Tile rendering & map logic
+│   │   └── tiles.json          # Tile definitions & level data
+│   │
 │   ├── items/                  # Game entities & world objects
 │   │   ├── character.py        # Player character logic
 │   │   ├── enemy_1.py          # Enemy behavior & AI
 │   │   ├── streetLight.py      # Environment / static objects
-│   │   ├── template.py         # Base template for new game items
+│   │   ├── info.py             # Item rendering
 │   │   └── info.json           # Item metadata & configuration
+│   │
+│   └── images/                 # Global game assets
+│
+├── game_engine/                # Core game engine package
+│   ├── items/                  # Game entities & world objects
+│   │   └── template.py         # Base template for new game items
 │   │
 │   ├── ui/                     # UI & gameplay flow layer
 │   │   ├── images/             # UI-related assets
 │   │   ├── designer.py         # UI layout & scene composition
-│   │   ├── event.py            # Centralized event handling
 │   │   ├── game.py             # Core gameplay state & loop control
 │   │   ├── home.py             # Home / menu screen logic
-│   │   ├── main.py             # Engine entry point
-│   │   ├── tiles.py            # Tile rendering & map logic
-│   │   └── tiles.json          # Tile definitions & level data
+│   │   └── main.py             # Engine entry point
 │   │
-│   ├── gameMotors.py           # Engine motors (physics, update loop)
+│   ├── package.py              # Engine motors (physics, update loop)
+│   ├── event.py                # Centralized event handling
+│   ├── game_state.py           # Global variable holder
 │   └── news.txt                # Engine notes / dev logs
-│
-├── images/                     # Global game assets
 │
 ├── README.md                   # Project documentation
 ├── requirements.txt            # Python dependencies
