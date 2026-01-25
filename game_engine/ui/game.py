@@ -11,7 +11,7 @@ class Window:
         self.surface_size = self.surface.get_size()
 
         self.func_dict = {}
-        self.funcImplementer("tiles.py", "datas")
+        self.func_implementer("tiles.py", "datas")
         self.tile_dict_RAW, self.tile_dict = self.func_dict["tiles"].read(return_dict = "both")
         self.items = os.listdir("items")
         self.command = "game_start"
@@ -20,7 +20,7 @@ class Window:
             if not self.tile_dict[1]["layers"]:
                 self.command = "designer_start"
 
-    def funcImplementer(self, funcName: str, directory: str):
+    def func_implementer(self, funcName: str, directory: str):
         if not funcName.rstrip(".py") in self.func_dict.keys():
             spec = importlib.util.spec_from_file_location(funcName.rstrip(".py"), "{}/{}".format(directory, funcName))
             foo = importlib.util.module_from_spec(spec)
@@ -54,7 +54,7 @@ class Window:
                 item = self.tile_dict_RAW[str(key)]["layers"][str(coords)].replace(".png", ".py")
 
                 if item in self.items:
-                    self.funcImplementer(item, "items")
+                    self.func_implementer(item, "items")
                     func = self.func_dict[item.rstrip(".py")]
                     obj = func.update(self.tile_dict)
                     image, coords = obj[0]

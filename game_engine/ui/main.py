@@ -3,7 +3,7 @@ import pygame, repackage, os
 timer = pygame.time.Clock()
 surface_size = (1366, 768)
 screen = pygame.display.set_mode(surface_size)
-pygame.display.set_caption("Forklift")
+pygame.display.set_caption("PyGameEngine")
 pygame.mouse.set_visible(False)
 
 os.chdir("game_1")
