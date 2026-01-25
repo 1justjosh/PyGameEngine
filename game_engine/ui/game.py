@@ -1,6 +1,5 @@
 import importlib, repackage
 
-import game_1.datas.tiles as tiles
 repackage.up()
 from package import *
 
@@ -10,10 +9,12 @@ class Window:
         self.screen_size = screen.get_size()
         self.surface = pygame.Surface(np.array(self.screen_size) // 2).convert()
         self.surface_size = self.surface.get_size()
-        self.tile_dict_RAW, self.tile_dict = tiles.read(return_dict = "both")
+
+        self.func_dict = {}
+        self.funcImplementer("tiles.py", "datas")
+        self.tile_dict_RAW, self.tile_dict = self.func_dict["tiles"].read(return_dict = "both")
         self.items = os.listdir("items")
         self.command = "game_start"
-        self.func_dict = {}
 
         if len(self.tile_dict.keys()) == 1:
             if not self.tile_dict[1]["layers"]:
