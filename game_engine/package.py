@@ -7,7 +7,6 @@ from pygame import gfxdraw
 from ui.images.init import *
 repackage.up()
 from event import *
-from game_state import GameState
 
 pygame.init()
 
@@ -59,7 +58,9 @@ True
         self.stop_iteration = bool(stop_iteration)
 
         self.frames = ()
-        for frame in os.listdir(PATH):
+        frames = list(os.listdir(PATH))
+        frames.sort(key = str)
+        for frame in frames:
             try:
                 img = pygame.image.load(PATH + "/" + frame).convert_alpha()
                 scaled_img = pygame.transform.scale(img, tuple(np.array(img.get_rect().size) * scale))
@@ -1065,7 +1066,7 @@ def update(tiles):
             x_coor, y_coor = coords
 
             if font.endswith("anim"):
-                anim = Animation("../game_engine/ui/images/pixelFont_{}/latin_capital_letter_a".format(font.lower()), 2, scale, stop_iteration = True)
+                anim = Animation("../game_engine/ui/images/pixelFont_{}/latin_capital_letter_a".format(font.lower()), 3, scale, stop_iteration = True)
                 raw_text = [*text]
                 for index in range(len(raw_text)):
                     letter = raw_text[index]
@@ -1079,7 +1080,7 @@ def update(tiles):
 
                     if boolean:
                         path = "../game_engine/ui/images/pixelFont_{}/{}".format(font.lower(), name(letter).lower().replace(" ", "_"))
-                        anim = Animation(path, 2, scale, stop_iteration = True)
+                        anim = Animation(path, 3, scale, stop_iteration = True)
 
                         compeleted_text.update({(x_coor, y_coor): anim})
                         x_coor += anim.image_size[0]
