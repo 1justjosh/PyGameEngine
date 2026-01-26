@@ -121,7 +121,7 @@ class Window:
                 self.tools_coords_dict.update({image_name: (x, y)})
     
     def save_hitbox_rect(self, rects):
-        x, y, width, height = self.rects[0][0], self.rects[0][1], self.rects[1][0] - self.rects[0][0], self.rects[1][1] - self.rects[0][1]
+        x, y, width, height = rects[0][0], rects[0][1], rects[1][0] - rects[0][0], rects[1][1] - rects[0][1]
         x, y = np.array(np.array([x, y]) // self.win_scale) + Camera.coords
         tuned_rect = (int(x), int(y))
 
@@ -679,7 +679,7 @@ Animation Amount: {}""".format(self.objectSize, self.objectCoords, self.objectHe
         #-----------------------------------
 
         if self.command == "designer_close":
-            with open("../game_engine/ui/tiles.json", "w") as file:
+            with open("datas/tiles.json", "w") as file:
                 json.dump(self.tile_dict_RAW, file)
 
         return self.command

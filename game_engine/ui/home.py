@@ -86,6 +86,18 @@ class Window:
         self.surface.blit(e[0], e[1])
         UI.text(self.structure, 16, (0, 0), (200, 200, 200), win_name = "structure")
 
+        f = UI.window("test1", (1356 // 2 + 40, 450), (130, 130), (30, 30, 30), 2)
+        self.surface.blit(f[0], f[1])
+
+        g = UI.window("test2", (1356 // 2 + 190, 450), (130, 130), (200, 0, 0), 2)
+        self.surface.blit(g[0], g[1])
+
+        h = UI.window("test3", (1356 // 2 + 40, 590), (130, 130), (0, 200, 0), 2)
+        self.surface.blit(h[0], h[1])
+
+        i = UI.window("test4", (1356 // 2 + 190, 590), (130, 130), (0, 0, 200), 2)
+        self.surface.blit(i[0], i[1])
+
         if self.file_action:
             top_navbar_action_surf, top_navbar_action_coor = UI.window("top_navbar_action", (10, 40), (100, 300), (50, 50, 50), 1)
             

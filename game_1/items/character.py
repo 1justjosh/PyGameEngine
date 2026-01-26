@@ -34,18 +34,6 @@ for event in pygame_.event:
             if pins.değişken_6 != "Sola Kayma" and pins.değişken_6 != "Sağa Kayma":
                 self.direction = "Left"
 
-        elif event.key == pygame.K_w: #Key = w
-            self.velocity_y = -1
-            self.anim = self.Yürüme
-            if pins.değişken_6 != "Sola Kayma" and pins.değişken_6 != "Sağa Kayma":
-                self.direction = "Right"
-
-        elif event.key == pygame.K_s: #Key = s
-            self.velocity_y = 1
-            self.anim = self.Yürüme
-            if pins.değişken_6 != "Sola Kayma" and pins.değişken_6 != "Sağa Kayma":
-                self.direction = "Left"
-
         elif event.key == pygame.K_LSHIFT: #Key = Shift
             if abs(pins.characterSpeed_x) != 7 and pins.characterSpeed_x != 0:
                 if pins.characterSpeed_x > 0:

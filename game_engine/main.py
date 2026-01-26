@@ -2,7 +2,7 @@ import pygame, repackage, os
 
 timer = pygame.time.Clock()
 surface_size = (1366, 768)
-screen = pygame.display.set_mode(surface_size)
+screen = pygame.display.set_mode(surface_size) #pygame.FULLSCREEN
 pygame.display.set_caption("PyGameEngine")
 pygame.mouse.set_visible(False)
 
