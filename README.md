@@ -59,6 +59,13 @@ PyGameEngine/
 │   └── images/                 # Global game assets
 │
 ├── game_engine/                # Core game engine package
+│   ├── core/                   # Core engine systems used during game runtime
+│   │   ├── animation.py        # Animation system for sprites and entities
+│   │   ├── camera.py           # Camera system controlling view, offsets and transformations
+│   │   ├── light.py            # Lighting system with real-time shadows and light masking
+│   │   ├── physic.py           # Physics system handling collisions and movement logic
+│   │   └── ui.py               # UI system for in-game and editor interfaces
+│   │
 │   ├── items/                  # Game entities & world objects
 │   │   └── template.py         # Base template for new game items
 │   │
@@ -66,10 +73,10 @@ PyGameEngine/
 │   │   ├── images/             # UI-related assets
 │   │   ├── designer.py         # UI layout & scene composition
 │   │   ├── game.py             # Core gameplay state & loop control
-│   │   ├── home.py             # Home / menu screen logic
-│   │   └── main.py             # Engine entry point
+│   │   └── home.py             # Home / menu screen logic  
 │   │
-│   ├── package.py              # Engine motors (physics, update loop)
+│   ├── main.py                 # Project entry point
+│   ├── package.py              # Engine motors initializer
 │   ├── event.py                # Centralized event handling
 │   ├── game_state.py           # Global variable holder
 │   └── news.txt                # Engine notes / dev logs
@@ -87,5 +94,5 @@ After the installation of required libraries,
 Run this project using this command:
 
 ```sh
-python3 game_engine/ui/main.py
+python3 game_engine/main.py
 ```
