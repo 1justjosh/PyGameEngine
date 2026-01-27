@@ -125,6 +125,10 @@ class Window:
         x, y = np.array(np.array([x, y]) // self.win_scale) + Camera.coords
         tuned_rect = (int(x), int(y))
 
+        surface = pygame.Surface((width // self.win_scale, height // self.win_scale), pygame.SRCALPHA)
+        surface.fill((255, 0, 0))
+
+        self.tile_dict[self.layer]["hitbox"].update({tuned_rect: surface})
         self.tile_dict_RAW[str(self.layer)]["hitbox"].update({str(tuned_rect): [width, height]})
 
     def auto_fill(self):
