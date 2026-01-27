@@ -79,6 +79,7 @@ PyGameEngine/
 │   ├── package.py              # Engine motors initializer
 │   ├── event.py                # Centralized event handling
 │   ├── game_state.py           # Global variable holder
+│   ├── history.json            # Stores previously opened game project paths for quick access and recent projects
 │   └── news.txt                # Engine notes / dev logs
 │
 ├── README.md                   # Project documentation
