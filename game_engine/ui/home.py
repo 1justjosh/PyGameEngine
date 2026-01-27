@@ -1,4 +1,4 @@
-import repackage, numpy as np
+import repackage, numpy as np, os
 
 from ui.images.init import *
 repackage.up()
@@ -114,6 +114,12 @@ class Window:
                 if top_navbar_action_surf.item_coords == (2, 2):
                     pass
                 elif top_navbar_action_surf.item_coords == (2, 23):
+                    target_dir = "game_1"
+                    current_dir = os.path.basename(os.getcwd())
+
+                    if current_dir != target_dir:
+                        os.chdir(target_dir)
+                        
                     self.command = "game_start"
 
         top_navbar_surf, top_navbar_coor = UI.window("top_navbar", (0, 0), (1366, 40), (0, 0, 0), 1)

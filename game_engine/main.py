@@ -22,7 +22,6 @@ while command:
         command = home_.update()
     elif command.startswith("game"): 
         if game_ is None:
-            os.chdir("game_1")
             game_ = game.Window(screen)
         
         command = game_.update()
