@@ -14,6 +14,7 @@ class Window:
         self.cursor_bool = True
         self.cursor = image_.normalCursor
         self.file_action = False
+        self.open_action = False
         self.command = "home_start"
         self.blur_screen = pygame.Surface((1366, 768)).convert_alpha()
 
@@ -114,12 +115,24 @@ class Window:
                 if top_navbar_action_surf.item_coords == (2, 2):
                     pass
                 elif top_navbar_action_surf.item_coords == (2, 23):
+                    self.open_action = False if self.open_action else True
+                    
+        if self.open_action:
+            top_navbar_action_action_surf, top_navbar_action_action_coor = UI.window("top_navbar_action_action", (110, 63), (100, 100), (50, 50, 50), 1)
+            
+            UI.window("action_action_1", (2, 2), (90, 20), (50, 50, 50), "button", win_name = "top_navbar_action_action")
+            UI.text("game_1", 14, (3, 3), (200, 200, 200), win_name = "action_action_1")
+
+            try:
+                self.surface.blit(top_navbar_action_action_surf, top_navbar_action_action_coor)
+            except:
+                if top_navbar_action_action_surf.item_coords == (2, 2):
                     target_dir = "game_1"
                     current_dir = os.path.basename(os.getcwd())
 
                     if current_dir != target_dir:
                         os.chdir(target_dir)
-                        
+
                     self.command = "game_start"
 
         top_navbar_surf, top_navbar_coor = UI.window("top_navbar", (0, 0), (1366, 40), (0, 0, 0), 1)
@@ -131,7 +144,11 @@ class Window:
             self.surface.blit(top_navbar_surf, top_navbar_coor)
         except TypeError:
             if top_navbar_surf.item_coords == (15, 8):
-                self.file_action = False if self.file_action else True
+                if self.file_action:
+                    self.open_action = False
+                    self.file_action = False
+                else:
+                    self.file_action = True
             else:
                 pass
 
