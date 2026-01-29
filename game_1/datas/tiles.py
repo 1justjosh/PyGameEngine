@@ -3,7 +3,7 @@ import json
 import pygame
 
 
-def read(return_dict = "worked"):
+def read(return_dict="worked"):
     tile_dict_RAW = {}
     tile_dict = {}
 
@@ -17,20 +17,20 @@ def read(return_dict = "worked"):
                         "layers": {},
                         "visibility": datas[key]["visibility"],
                         "parallax": datas[key]["parallax"],
-                        "hitbox": datas[key]["hitbox"]
-                        }
+                        "hitbox": datas[key]["hitbox"],
                     }
-                )
+                }
+            )
             tile_dict.update(
                 {
                     int(key): {
                         "layers": {},
                         "visibility": datas[key]["visibility"],
                         "parallax": datas[key]["parallax"],
-                        "hitbox": {}
-                        }
+                        "hitbox": {},
                     }
-                )
+                }
+            )
 
             for data in datas[key]["layers"].keys():
                 coords = data[1:-1].split(", ")
@@ -43,18 +43,15 @@ def read(return_dict = "worked"):
                         pass
 
                 tile_dict_RAW[key]["layers"].update(
-                    {
-                        "({}, {})".format(coords[0], coords[1]): datas[key]["layers"][data]
-                        }
-                    )
+                    {"({}, {})".format(coords[0], coords[1]): datas[key]["layers"][data]}
+                )
                 tile_dict[int(key)]["layers"].update(
                     {
-                        (
-                            int(coords[0]),
-                            int(coords[1])
-                            ): pygame.image.load("images/built_in_images/" + datas[key]["layers"][data]).convert_alpha()
-                        }
-                    )
+                        (int(coords[0]), int(coords[1])): pygame.image.load(
+                            "images/built_in_images/" + datas[key]["layers"][data]
+                        ).convert_alpha()
+                    }
+                )
 
             for i, j in datas[key]["hitbox"].items():
                 a = i.strip("()").split(", ")

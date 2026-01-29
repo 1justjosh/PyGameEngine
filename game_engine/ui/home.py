@@ -146,7 +146,7 @@ class Window:
                             msg = "Choose a folder"
                             self.filePATH = QtWidgets.QFileDialog.getExistingDirectory(self, msg, os.getenv("HOME"))
 
-                    app = QtWidgets.QApplication(sys.argv) # noqa: F841
+                    app = QtWidgets.QApplication(sys.argv)  # noqa: F841
 
                     target_dir = Window_().filePATH
                     current_dir = os.path.basename(os.getcwd())

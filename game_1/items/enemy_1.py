@@ -7,6 +7,7 @@ from game_engine.items.template import *
 
 self = Temp("enemy_1")
 
+
 @self.decorate
 def update(tiles):
     exec('''

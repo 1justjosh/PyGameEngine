@@ -87,9 +87,7 @@ class UI:
         try:
             cls.memory[win_name]
         except KeyError:
-            raise KeyError(
-                    f"{win_name} not found. You must set {win_name} first."
-                ) from None
+            raise KeyError(f"{win_name} not found. You must set {win_name} first.") from None
 
         else:
             clickable_distinction = "clickables" if clickable else "not_clickables"
@@ -290,6 +288,7 @@ repackage.up()
 from game_engine.items.template import *
 
 self = Temp("{name}")
+
 
 @self.decorate
 def update(tiles):
@@ -535,9 +534,7 @@ def update(tiles):
         try:
             cls.memory[win_name]
         except KeyError:
-            raise KeyError(
-                f"{win_name} not found. You must set {win_name} first."
-            ) from None
+            raise KeyError(f"{win_name} not found. You must set {win_name} first.") from None
 
         if cls.memory[win_name]["text"]["name"] != text:
             compeleted_text = {}

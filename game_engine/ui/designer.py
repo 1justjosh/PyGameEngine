@@ -275,7 +275,7 @@ class Window:
                 msg = "Choose a location for the published game"
                 self.filePATH = QtWidgets.QFileDialog.getExistingDirectory(self, msg, os.getenv("HOME"))
 
-        app = QtWidgets.QApplication(sys.argv) # noqa: F841
+        app = QtWidgets.QApplication(sys.argv)  # noqa: F841
 
         dest = Window_().filePATH
         publish_dest = f"{dest}/game"
@@ -754,7 +754,7 @@ Animation Amount: {}""".format(
                             msg = "Choose an Animation File for '{}' Sprite".format(self.objectName)
                             self.filePATH = QtWidgets.QFileDialog.getExistingDirectory(self, msg, os.getenv("HOME"))
 
-                    app = QtWidgets.QApplication(sys.argv) # noqa: F841
+                    app = QtWidgets.QApplication(sys.argv)  # noqa: F841
 
                     anim_PATH = Window_().filePATH
                     with open("items/info.json", "r") as json_file:

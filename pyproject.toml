@@ -25,6 +25,6 @@ line_length = 120
 line-length = 120
 lint.select = ["E", "F", "W", "I", "B"]
 lint.ignore = ["E203"]
-lint.per-file-ignores = { 
-    "game_engine/**/*.py" = ["E402"]
-}
+
+[tool.ruff.lint.per-file-ignores]
+"game_engine/**/*.py" = ["E402"]
