@@ -82,6 +82,7 @@ PyGameEngine/
 │   ├── history.json            # Stores previously opened game project paths for quick access and recent projects
 │   └── news.txt                # Engine notes / dev logs
 │
+├── CONTRIBUTION.md             # Project documentation for contributors
 ├── README.md                   # Project documentation
 ├── requirements.txt            # Python dependencies
 ├── LICENSE                     # MIT License
