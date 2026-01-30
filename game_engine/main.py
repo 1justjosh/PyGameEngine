@@ -1,4 +1,5 @@
 import pygame
+import repackage
 
 timer = pygame.time.Clock()
 surface_size = (1366, 768)
@@ -7,7 +8,8 @@ pygame.display.set_caption("PyGameEngine")
 pygame.mouse.set_visible(False)
 
 
-from game_engine.ui import designer, game, home
+repackage.up()
+from ui import designer, game, home
 
 home_ = home.Window(screen)
 game_ = None
@@ -45,7 +47,6 @@ while command:
 
     pygame.display.update()
 
-    timer.tick(60) # FPS Limit
-    print(f"fps[{timer.get_fps() :.0f}]")
+    timer.tick(60)  # FPS Limit
 
 pygame.quit()

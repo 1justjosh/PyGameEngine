@@ -9,12 +9,16 @@ This module exposes the main UI-related components
 internal implementation details.
 """
 
+import repackage
+
+repackage.up()
+
 # --- Core UI Components ---
-from .core.animation import Animation
-from .core.camera import Camera
-from .core.light import Light
-from .core.physic import Physic
-from .core.ui import UI
+from core.animation import Animation
+from core.camera import Camera
+from core.light import Light
+from core.physic import Physic
+from core.ui import UI
 
 __all__ = [
     "Animation",
