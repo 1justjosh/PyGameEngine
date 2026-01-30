@@ -7,10 +7,9 @@ import pygame
 from PyQt5 import QtWidgets
 
 from .. import ROOT_DIR
-from ..ui.images import IMAGES
-
 from ..event import pygame_
 from ..package import UI
+from ..ui.images import IMAGES
 
 
 class Window:
