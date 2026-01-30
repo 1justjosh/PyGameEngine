@@ -24,8 +24,6 @@ This repository also serves as a long-term reference for game engine design deci
 | `pygame`    | 2.6.1   |
 | `Pillow`    | 10.4.0  |
 | `PyQt5`     | 5.15.11 |
-| `repackage` | 0.7.3   |
-
 ---
 
 ## Installation
@@ -43,6 +41,8 @@ pip install -r requirements.txt
 ## Project Structure
 
 ```
+
+
 PyGameEngine/
 ├── game_1/                     # Example game
 │   ├── datas/                  # Game entities & world objects
