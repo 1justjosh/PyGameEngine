@@ -12,6 +12,17 @@ from ..event import pygame_
 
 pygame.init()
 
+_FONT_CACHE = {}
+_ANIM_CACHE = {}     # cache for animated characters
+_TEXT_SURFACE_CACHE = {}  # cache per-window text surfaces
+
+
+def get_font(name, size):
+    key = (name, size)
+    if key not in _FONT_CACHE:
+        _FONT_CACHE[key] = pygame.font.SysFont(name, size)
+    return _FONT_CACHE[key]
+
 
 class UI:
     """
@@ -512,74 +523,78 @@ def update(tiles):
 
     @classmethod
     def text(
-        cls, text: str, scale: int, coords: tuple or list, color: tuple or list, win_name: str, font: str = "arial"
+            cls, text: str, scale: int, coords: tuple, color: tuple, win_name: str, font: str = "arial"
     ) -> None:
-        """
-        This function allows to write text in the window.
 
-        Examples of the Parameters;
-        ---------------------------
-        >>> text = "Hello World"
-        >>> scale = 13
-        >>> coords = (1, 2) #x and y coordinates
-        >>> color = (255, 255, 255) #Red, Green, Blue values
-        >>> win_name = "scuzz"
-        >>> font = "times new roman"
-        """
+        # --- 1. Ensure window exists ---
+        if win_name not in cls.memory:
+            raise KeyError(f"{win_name} not found. You must set {win_name} first.")
 
-        if cls.memory[win_name]["text"]["name"] == text:
+        mem = cls.memory[win_name]["text"]
+
+        # --- 2. If text is unchanged, do nothing ---
+        if mem["name"] == text:
             return
 
-        try:
-            cls.memory[win_name]
-        except KeyError:
-            raise KeyError(f"{win_name} not found. You must set {win_name} first.") from None
+        # --- 3. Prepare new text surfaces ---
+        completed = {}
+        x, y = coords
 
-        if cls.memory[win_name]["text"]["name"] != text:
-            compeleted_text = {}
-            x_coor, y_coor = coords
+        # ============================================================
+        # CASE A: ANIMATED FONT
+        # ============================================================
+        if font.endswith("anim"):
+            raw = list(text)
 
-            if font.endswith("anim"):
-                anim = Animation(
-                    "../game_engine/ui/images/pixelFont_{}/latin_capital_letter_a".format(font.lower()),
-                    3,
-                    scale,
-                    stop_iteration=True,
-                )
-                raw_text = [*text]
-                for index in range(len(raw_text)):
-                    letter = raw_text[index]
+            for i, letter in enumerate(raw):
 
-                    try:
-                        boolean = raw_text[index] != cls.memory[win_name]["text"]["name"][index]
-                    except IndexError:
-                        boolean = True
-                    if letter in [" ", "\n", "\t", "\r"]:
-                        boolean = False
-
-                    if boolean:
-                        path = "../game_engine/ui/images/pixelFont_{}/{}".format(
-                            font.lower(), name(letter).lower().replace(" ", "_")
-                        )
-                        anim = Animation(path, 3, scale, stop_iteration=True)
-
-                        compeleted_text.update({(x_coor, y_coor): anim})
-                        x_coor += anim.image_size[0]
+                # Skip whitespace (no animation)
+                if letter in [" ", "\n", "\t", "\r"]:
+                    if letter == "\n":
+                        y += scale * 10
+                        x = coords[0]
+                    elif letter == "\t":
+                        x += scale * 20
                     else:
-                        if letter == "\n" or letter == "\r":
-                            x_coor = coords[0]
-                            y_coor += (anim.image_size[1] // 2) * scale
-                        elif letter == "\t":
-                            x_coor += anim.image_size[0] * scale * 2
-                        else:
-                            x_coor += anim.image_size[0]
-            else:
-                lines = text.split("\n")
-                for line in lines:
-                    font_ = pygame.font.SysFont(font, scale)
-                    surface = font_.render(line, 1, color)
-                    compeleted_text.update({(x_coor, y_coor): surface})
-                    y_coor += surface.get_height()
+                        x += scale * 5
+                    continue
 
-            cls.memory[win_name]["text"]["name"] = text
-            cls.memory[win_name]["text"]["images"]["not_clickables"].update(compeleted_text)
+                # Cache key
+                key = (font, scale, letter)
+
+                # Load animation only once
+                if key not in _ANIM_CACHE:
+                    path = f"../game_engine/ui/images/pixelFont_{font.lower()}/{name(letter).lower().replace(' ', '_')}"
+                    _ANIM_CACHE[key] = Animation(path, 3, scale, stop_iteration=True)
+
+                anim = _ANIM_CACHE[key]
+                completed[(x, y)] = anim
+                x += anim.image_size[0]
+
+        # ============================================================
+        # CASE B: NORMAL FONT
+        # ============================================================
+        else:
+            # Cache key for entire text block
+            cache_key = (text, scale, font, color)
+
+            if cache_key in _TEXT_SURFACE_CACHE:
+                # Use cached surfaces
+                completed = _TEXT_SURFACE_CACHE[cache_key]
+            else:
+                # Build new surfaces
+                completed = {}
+                lines = text.split("\n")
+                font_obj = get_font(font, scale)
+
+                for line in lines:
+                    surf = font_obj.render(line, True, color)
+                    completed[(x, y)] = surf
+                    y += surf.get_height()
+
+                # Store in cache
+                _TEXT_SURFACE_CACHE[cache_key] = completed
+
+        # --- 4. Update memory ---
+        mem["name"] = text
+        mem["images"]["not_clickables"] = completed
