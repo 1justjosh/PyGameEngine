@@ -546,7 +546,7 @@ def update(tiles):
         if font.endswith("anim"):
             raw = list(text)
 
-            for i, letter in enumerate(raw):
+            for _i, letter in enumerate(raw):
 
                 # Skip whitespace (no animation)
                 if letter in [" ", "\n", "\t", "\r"]:
